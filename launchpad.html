@@ -1,0 +1,1555 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Start Page Launchpad Local</title>
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    :root{
+      --maxCols:10;
+      --tileSize:86px;
+      --gap:12px;
+      --radius:20px;
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    [data-theme="dark"]{
+      --bg0:#05040a; --bg1:#070814;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.10);
+      --text:#e9e7ff;
+      --muted:rgba(233,231,255,.62);
+      --accent:#8b5cf6;
+      --accent2:#22d3ee;
+      --shadow: rgba(0,0,0,.55);
+      --tileGlow: rgba(139,92,246,.14);
+      --tileGlow2: rgba(34,211,238,.12);
+    }
+
+    [data-theme="neon"]{
+      --bg0:#02030a; --bg1:#00000a;
+      --panel:rgba(255,255,255,.05);
+      --panel2:rgba(255,255,255,.07);
+      --stroke:rgba(34,211,238,.22);
+      --text:#eaffff;
+      --muted:rgba(234,255,255,.62);
+      --accent:#22d3ee;
+      --accent2:#d946ef;
+      --shadow: rgba(0,0,0,.70);
+      --tileGlow: rgba(34,211,238,.24);
+      --tileGlow2: rgba(217,70,239,.20);
+    }
+
+    [data-theme="tactical"]{
+      --bg0:#060a07; --bg1:#020402;
+      --panel:rgba(180,255,200,.05);
+      --panel2:rgba(180,255,200,.07);
+      --stroke:rgba(180,255,200,.14);
+      --text:#eaffea;
+      --muted:rgba(234,255,234,.62);
+      --accent:#22c55e;
+      --accent2:#84cc16;
+      --shadow: rgba(0,0,0,.65);
+      --tileGlow: rgba(34,197,94,.16);
+      --tileGlow2: rgba(132,204,22,.12);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font:14px/1.35 var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 20% 0%, var(--tileGlow), transparent 60%),
+        radial-gradient(900px 700px at 80% 10%, var(--tileGlow2), transparent 62%),
+        radial-gradient(1200px 900px at 50% 110%, rgba(255,255,255,.06), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    .wrap{ max-width: 1700px; margin: 0 auto; padding: 18px 18px 28px; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:14px;
+      background: linear-gradient(180deg, var(--panel2), var(--panel));
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      box-shadow: 0 18px 60px var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand{ display:flex; align-items:center; gap:12px; min-width: 260px; }
+    .logo{
+      width:42px;height:42px; border-radius:14px;
+      display:grid; place-items:center;
+      background: rgba(0,0,0,.22);
+      border:1px solid var(--stroke);
+      box-shadow: 0 10px 25px rgba(0,0,0,.45);
+      user-select:none; font-size:22px;
+    }
+    .title{ display:flex; flex-direction:column; gap:2px; }
+    .title b{ font-size:15px; letter-spacing:.2px; }
+    .title span{ color:var(--muted); font-size:12px; }
+
+    .search{
+      flex:1; display:flex; gap:10px; align-items:center; justify-content:center;
+      min-width: 280px;
+    }
+    form.searchBox{
+      width:min(860px, 100%);
+      display:flex; gap:10px; align-items:center;
+      padding:10px 12px;
+      border-radius:16px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .searchBox input{
+      width:100%;
+      border:0; outline:0;
+      background:transparent;
+      color:var(--text);
+      font-size:14px;
+    }
+    .searchBox input::placeholder{ color:rgba(233,231,255,.55); }
+
+    .row{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+      justify-content:flex-end; min-width: 320px;
+    }
+
+    .btn{
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25);
+      color:var(--text);
+      padding:9px 11px;
+      border-radius:999px;
+      cursor:pointer;
+      user-select:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.35);
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .btn:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.20); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border-color: rgba(255,255,255,.20);
+    }
+    .btn.danger{
+      border-color: rgba(239,68,68,.40);
+      background: rgba(239,68,68,.12);
+    }
+    .btn.small{ padding:8px 10px; font-weight:900; }
+
+    .select{
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25);
+      color:var(--text);
+      padding:9px 11px;
+      border-radius:999px;
+      font-weight:900;
+      cursor:pointer;
+      outline:none;
+    }
+
+    .hint{
+      margin: 12px 4px 14px;
+      color: var(--muted);
+      font-size:12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .kbd{
+      font-family: var(--mono);
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      padding:2px 6px;
+      border-radius:8px;
+      color: rgba(233,231,255,.90);
+    }
+
+    .section{
+      margin-top: 16px;
+      padding: 12px 12px 14px;
+      border-radius:18px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.18);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 16px 50px rgba(0,0,0,.45);
+    }
+    .sectionHead{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; margin-bottom: 10px; padding: 0 6px;
+    }
+    .sectionHead h2{
+      margin:0;
+      font-size:13px;
+      letter-spacing:.2px;
+      text-transform:uppercase;
+      color: rgba(233,231,255,.90);
+    }
+    .sectionHead .sub{ color: var(--muted); font-size:12px; }
+
+    .grid{
+      display:grid;
+      gap: var(--gap);
+      grid-template-columns: repeat(var(--maxCols), minmax(0, 1fr));
+      align-items: start;
+      padding: 4px;
+    }
+    @media (max-width: 1600px){ .grid{ grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+    @media (max-width: 1280px){ .grid{ grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+    @media (max-width: 980px){  .grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    @media (max-width: 560px){  .grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+    .tile{
+      height: calc(var(--tileSize) + 52px);
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.11), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+      box-shadow: 0 18px 50px rgba(0,0,0,.55);
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease, box-shadow .12s ease;
+      user-select:none;
+    }
+    .tile:hover{
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,.22);
+      background:
+        radial-gradient(circle at 30% 20%, var(--tileGlow), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      box-shadow: 0 24px 70px rgba(0,0,0,.65);
+    }
+    .tile:active{ transform: translateY(-1px); }
+
+    .tileInner{
+      height:100%;
+      padding: 12px 10px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      gap:8px;
+    }
+
+    .ico{
+      width: var(--tileSize);
+      height: var(--tileSize);
+      border-radius: 22px;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.13), rgba(0,0,0,.18) 60%),
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.03),
+        0 14px 28px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+
+    .ico .svgMask{
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      filter:
+        drop-shadow(0 10px 18px rgba(0,0,0,.55))
+        drop-shadow(0 0 18px var(--tileGlow))
+        drop-shadow(0 0 10px var(--tileGlow2));
+      opacity: .98;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      -webkit-mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    .tile:hover .ico{ border-color: rgba(255,255,255,.24); }
+    .tile:hover .ico .svgMask{
+      transform: translateY(-1px);
+      filter:
+        drop-shadow(0 10px 18px rgba(0,0,0,.60))
+        drop-shadow(0 0 22px var(--tileGlow))
+        drop-shadow(0 0 14px var(--tileGlow2));
+    }
+
+    .ico .fallback{
+      font-size: 30px;
+      text-shadow: 0 8px 18px rgba(0,0,0,.55);
+    }
+
+    .label{
+      text-align:center;
+      font-weight: 950;
+      font-size: 13px;
+      letter-spacing: .2px;
+      color: rgba(233,231,255,.99);
+      width: 100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      padding: 2px 8px 0;
+      text-shadow: 0 2px 14px rgba(0,0,0,.60);
+    }
+
+    .urlHint{
+      text-align:center;
+      font-size: 12px;
+      color: rgba(233,231,255,.80);
+      width: 100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      padding: 0 10px 2px;
+      text-shadow: 0 2px 14px rgba(0,0,0,.60);
+      opacity:.95;
+    }
+
+    .tile.dragging{ opacity:.55; transform: scale(.98); }
+    .tile.dropTarget{ outline: 2px dashed rgba(255,255,255,.30); outline-offset: -6px; }
+
+    .mini{
+      position:absolute; top:8px; right:8px;
+      display:flex; gap:6px;
+      opacity:0; transform: translateY(-3px);
+      transition: opacity .12s ease, transform .12s ease;
+    }
+    .tile:hover .mini{ opacity:1; transform: translateY(0); }
+    .mini button{
+      width:28px;height:28px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.30);
+      color: rgba(233,231,255,.90);
+      cursor:pointer;
+      font-size:14px;
+      display:grid;
+      place-items:center;
+    }
+    .mini button:hover{ background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.20); }
+
+    .backdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.65);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 9999;
+    }
+    .backdrop.show{ display:flex; }
+
+    .modal{
+      width:min(860px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(10,10,20,.92);
+      box-shadow: 0 25px 80px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+    }
+    .modalHead b{ font-size:14px; }
+    .modalHead .x{
+      width:34px;height:34px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      color: rgba(233,231,255,.9);
+      cursor:pointer;
+      font-size:16px;
+    }
+
+    .modalBody{
+      padding: 14px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 720px){ .modalBody{ grid-template-columns: 1fr; } }
+
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    .field label{ font-size:12px; color: rgba(233,231,255,.70); }
+
+    .field input, .field select, .field textarea{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px;
+      outline:none;
+      font-size: 13px;
+    }
+    .field textarea{ min-height: 92px; resize: vertical; }
+
+    .iconRow{ display:flex; gap:8px; align-items:center; }
+    .iconRow input{ flex:1; }
+
+    .tip{
+      grid-column: 1 / -1;
+      margin-top:-6px;
+      color: rgba(233,231,255,.62);
+      font-size:12px;
+    }
+
+    .modalFoot{
+      padding: 12px 14px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      background: rgba(0,0,0,.18);
+      flex-wrap:wrap;
+    }
+
+    .toast{
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.65);
+      border:1px solid rgba(255,255,255,.12);
+      color: rgba(233,231,255,.9);
+      padding: 10px 12px;
+      border-radius: 999px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      display:none;
+      z-index: 10000;
+      backdrop-filter: blur(10px);
+      max-width: min(900px, calc(100% - 24px));
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .toast.show{ display:block; }
+
+    .ipBackdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 10001;
+    }
+    .ipBackdrop.show{ display:flex; }
+
+    .ipPanel{
+      width: min(1040px, 100%);
+      max-height: min(82vh, 900px);
+      overflow:auto;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(10,10,20,.94);
+      box-shadow: 0 25px 90px rgba(0,0,0,.75);
+      display:flex;
+      flex-direction:column;
+    }
+    .ipHead{
+      position: sticky;
+      top: 0;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      z-index: 2;
+      backdrop-filter: blur(8px);
+      flex-wrap:wrap;
+    }
+    .ipHead b{ font-size:14px; }
+    .ipHead .right{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .ipSearch{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 12px;
+      outline:none;
+      width: min(420px, 52vw);
+    }
+    .ipBody{ padding: 14px; overflow:auto; }
+    .ipNote{
+      color: rgba(233,231,255,.70);
+      font-size:12px;
+      margin: 0 0 10px 2px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    /* Tabs */
+    .ipTabs{
+      display:flex;
+      gap:8px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .ipTab{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      color: rgba(233,231,255,.75);
+      padding:8px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      user-select:none;
+      transition: background .12s ease, color .12s ease, border-color .12s ease;
+    }
+    .ipTab:hover{ background: rgba(255,255,255,.07); }
+    .ipTab.active{
+      background: linear-gradient(90deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      color: rgba(233,231,255,1);
+      border-color: rgba(255,255,255,.25);
+    }
+
+    .ipGrid{
+      display:grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 980px){ .ipGrid{ grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+    @media (max-width: 760px){ .ipGrid{ grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+    @media (max-width: 520px){ .ipGrid{ grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+    .ipIcon{
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      cursor:pointer;
+      padding: 10px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+      min-height: 92px;
+    }
+    .ipIcon:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.16);
+    }
+    .ipIcon:active{ transform: translateY(0); }
+    .ipIcon img{
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      display:block;
+      filter:
+        drop-shadow(0 10px 18px rgba(0,0,0,.45))
+        drop-shadow(0 0 14px var(--tileGlow));
+    }
+    .ipIcon span{
+      font-size: 11px;
+      color: rgba(233,231,255,.72);
+      max-width: 92px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      text-align:center;
+    }
+    .ipEmpty{
+      padding: 16px;
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius: 16px;
+      color: rgba(233,231,255,.75);
+      text-align:center;
+      background: rgba(0,0,0,.20);
+    }
+
+    /* Emoji picker grid */
+    .emojiGrid{
+      display:grid;
+      grid-template-columns: repeat(11, minmax(0, 1fr));
+      gap: 6px;
+    }
+    @media (max-width: 760px){ .emojiGrid{ grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+    @media (max-width: 520px){ .emojiGrid{ grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+    .emojiCat{
+      margin: 14px 0 6px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: rgba(233,231,255,.60);
+    }
+    .emojiCat:first-child{ margin-top: 0; }
+
+    .emojiCell{
+      font-size: 26px;
+      line-height: 1;
+      padding: 8px 0;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-align:center;
+      user-select:none;
+      transition: background .10s ease, border-color .10s ease, transform .08s ease;
+    }
+    .emojiCell:hover{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.16);
+      transform: translateY(-1px);
+    }
+    .emojiCell:active{ transform: translateY(0); }
+  </style>
+</head>
+
+<body data-theme="dark">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" id="logo">🚀</div>
+        <div class="title">
+          <b>Start Page Launchpad Local</b>
+          <span>10 columns • unlimited rows • 3 themes • localStorage</span>
+        </div>
+      </div>
+
+      <div class="search">
+        <form class="searchBox" id="searchForm" autocomplete="off">
+          <span style="opacity:.7">🔎</span>
+          <input id="q" type="text" placeholder="Search (Startpage default) — or paste a URL and press Enter" />
+          <button class="btn" type="submit">Go</button>
+        </form>
+      </div>
+
+      <div class="row">
+        <select class="select" id="themeSelect" title="Theme">
+          <option value="dark">🌑 Dark</option>
+          <option value="neon">💜 Neon</option>
+          <option value="tactical">🟢 Tactical</option>
+        </select>
+
+        <button class="btn primary" id="addBtn">➕ Add</button>
+        <button class="btn" id="exportBtn">⬇️ Export</button>
+        <button class="btn" id="importBtn">⬆️ Import</button>
+        <button class="btn danger" id="resetBtn">♻️ Reset</button>
+      </div>
+    </div>
+
+    <div class="hint">
+      Tips:
+      <span class="kbd">Drag</span> tiles to reorder •
+      <span class="kbd">Right-click</span> opens in a new tab •
+      <span class="kbd">✏️</span> edit • <span class="kbd">🗑️</span> delete •
+      Theme saved per browser.
+      <span class="kbd">Icons</span> live at <span class="kbd">localhost/lp-icons/</span>
+    </div>
+
+    <div class="section">
+      <div class="sectionHead">
+        <div>
+          <h2>Launch Grid</h2>
+          <div class="sub">Generic template for anyone (no Google required)</div>
+        </div>
+        <div class="sub" id="countLabel">—</div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <!-- Tile Modal -->
+  <div class="backdrop" id="backdrop" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modalHead">
+        <b id="modalTitle">Add Tile</b>
+        <button class="x" id="closeModal" title="Close">✖</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="field">
+          <label>Title</label>
+          <input id="fTitle" placeholder="e.g. My Site" />
+        </div>
+
+        <div class="field">
+          <label>URL</label>
+          <input id="fUrl" placeholder="https://example.com or guide.html" />
+        </div>
+
+        <div class="field">
+          <label>Icon Type</label>
+          <select id="fIconType">
+            <option value="emoji">Emoji</option>
+            <option value="letter">Letter</option>
+            <option value="image">Image URL (SVG pack)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Icon Value</label>
+          <div class="iconRow">
+            <input id="fIconVal" placeholder="🚀 or A or /lp-icons/camera.svg" />
+            <button type="button" class="btn" id="pickIconBtn" title="Choose an icon or emoji">
+              🧩 Pick
+            </button>
+          </div>
+        </div>
+
+        <div class="tip">
+          Tip: Use <b>Pick</b> to choose an emoji or an icon from the SVG pack (from <span class="kbd">localhost/lp-icons/icons.json</span>).
+        </div>
+
+        <div class="field" style="grid-column: 1 / -1;">
+          <label>Notes (optional)</label>
+          <textarea id="fNotes" placeholder="Optional notes (not shown on tile)"></textarea>
+        </div>
+      </div>
+
+      <div class="modalFoot">
+        <button class="btn" id="cancelBtn">Cancel</button>
+        <button class="btn primary" id="saveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Icon Picker Modal -->
+  <div class="ipBackdrop" id="ipBackdrop" role="dialog" aria-modal="true">
+    <div class="ipPanel">
+      <div class="ipHead">
+        <b>Icon Picker</b>
+        <div class="right">
+          <input class="ipSearch" id="ipSearch" placeholder="Filter… (camera, calendar, rocket, mail)" />
+          <button class="btn small" id="ipCloseBtn" type="button">Close</button>
+        </div>
+      </div>
+      <div class="ipBody">
+        <div class="ipTabs">
+          <div class="ipTab active" id="tabEmoji">😀 Emojis</div>
+          <div class="ipTab" id="tabTwemoji">🎨 Twemoji</div>
+          <div class="ipTab" id="tabSvg">🧩 SVG Pack</div>
+        </div>
+        <div class="ipNote" id="ipNote"></div>
+        <div id="ipContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="filePicker" accept="application/json" style="display:none" />
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---------- CONFIG ----------
+    const STORAGE_KEY = "launchpad_generic_v3";
+    const THEME_KEY   = "launchpad_theme_v1";
+    const DEFAULT_SEARCH = "https://www.startpage.com/do/search?query=";
+
+    // Icon location + manifest (FINAL)
+    const ICON_BASE = "/lp-icons/";
+    const ICON_MANIFEST = ICON_BASE + "icons.json";
+
+    // Twemoji (full color emoji SVGs — work on every OS, incl. Win 7)
+    // Files like 1f600.svg — generate manifest with:
+    //   cd lp-icons/twemoji && ls -1 *.svg | jq -R . | jq -s . > icons.json
+    const TWEMOJI_BASE = "/lp-icons/twemoji/";
+    const TWEMOJI_MANIFEST = TWEMOJI_BASE + "icons.json";
+
+    // ---- Default tiles ----
+    const DEFAULT_TILES = [
+      { title:"Email",       url:"https://mail.google.com/",      iconType:"emoji",  iconVal:"✉️" },
+      { title:"Calendar",    url:"https://calendar.google.com/",  iconType:"emoji",  iconVal:"📅" },
+      { title:"Docs",        url:"https://docs.google.com/",      iconType:"emoji",  iconVal:"📄" },
+      { title:"YouTube",     url:"https://www.youtube.com/",       iconType:"emoji",  iconVal:"▶️" },
+      { title:"Reddit",      url:"https://www.reddit.com/",       iconType:"emoji",  iconVal:"👽" },
+      { title:"GitHub",      url:"https://github.com/",           iconType:"emoji",  iconVal:"🐙" },
+      { title:"Server Admin",url:"https://example.com/admin",     iconType:"emoji",  iconVal:"🛠️" },
+      { title:"File Manager",url:"https://example.com/files",     iconType:"emoji",  iconVal:"📁" },
+      { title:"Notes",       url:"https://example.com/notes",     iconType:"emoji",  iconVal:"🗒️" },
+      { title:"Guide",       url:"guide.html",                    iconType:"emoji",  iconVal:"📘" }
+    ];
+
+    // ---- Emoji library (name matches search filter) ----
+    const EMOJI_LIB = [
+      { cat:"Smileys", items:[
+        ["😀 grinning happy","😀"],["😃 smile","😃"],["😄 laugh","😄"],["😁 beam grin","😁"],["😆 squint laugh","😆"],
+        ["😅 sweat laugh","😅"],["🤣 rofl","🤣"],["😂 joy tears","😂"],["🙂 slight smile","🙂"],["🙃 upside down","🙃"],
+        ["😉 wink","😉"],["😊 blush","😊"],["😇 halo angel","😇"],["🥰 hearts love","🥰"],["😍 heart eyes","😍"],
+        ["🤩 star struck","🤩"],["😘 kiss","😘"],["😗 kissing","😗"],["😚 kissing closed","😚"],["🥲 tear smile","🥲"],
+        ["😋 yum","😋"],["😛 tongue","😛"],["😜 wink tongue","😜"],["🤪 zany crazy","🤪"],["🤨 eyebrow skeptical","🤨"],
+        ["🧐 monocle","🧐"],["🤓 nerd","🤓"],["😎 cool sunglasses","😎"],["🥳 party","🥳"],["😏 smirk","😏"],
+        ["😌 relieved calm","😌"],["😪 sleepy","😪"],["🤤 drool","🤤"],["😴 sleep zzz","😴"],["🤯 mind blown","🤯"],
+        ["😵 dizzy","😵"],["🤠 cowboy","🤠"],["🥴 woozy","🥴"],["🤢 sick nausea","🤢"],["🤮 vomit","🤮"],
+        ["🤧 sneeze","🤧"],["🥶 cold","🥶"],["🥵 hot","🥵"],["🤦 facepalm","🤦"],["🤷 shrug","🤷"],
+        ["😈 devil","😈"],["👿 imp devil","👿"],["💀 skull","💀"],["👻 ghost","👻"],["🤖 robot","🤖"]
+      ]},
+      { cat:"People & Gestures", items:[
+        ["👋 wave hello","👋"],["🤚 raised back hand","🤚"],["🖐️ fingers splayed","🖐️"],["✌️ peace victory","✌️"],["🤞 crossed fingers luck","🤞"],
+        ["🤟 love you","🤟"],["🤘 rock on horns","🤘"],["👌 ok","👌"],["🤌 pinched chef kiss","🤌"],["👈 point left","👈"],
+        ["👉 point right","👉"],["👆 point up","👆"],["👇 point down","👇"],["👍 thumbs up like","👍"],["👎 thumbs down dislike","👎"],
+        ["✊ fist bump","✊"],["👊 punch","👊"],["🤛 left fist","🤛"],["🤜 right fist","🤜"],["👏 clap applause","👏"],
+        ["🙌 raised hands hooray","🙌"],["🤝 handshake deal","🤝"],["🙏 pray thanks","🙏"],["✍️ writing hand","✍️"],["💪 flex strong","💪"],
+        ["🧠 brain smart","🧠"],["👀 eyes watch look","👀"],["👁️ eye","👁️"],["👶 baby","👶"],["🧑 person","🧑"],
+        ["👮 police officer","👮"],["🕵️ detective spy","🕵️"],["💂 guard","💂"],["🥷 ninja","🥷"],["👩‍💻 person coder","👩‍💻"],
+        ["👨‍🔧 mechanic repair","👨‍🔧"],["🧑‍🚀 astronaut","🧑‍🚀"],["🦸 superhero","🦸"],["🦹 supervillain","🦹"],["🧙 mage wizard","🧙"],
+        ["🧛 vampire","🧛"],["🧜 merperson","🧜"],["🧚 fairy","🧚"],["🎅 santa","🎅"],["🤶 mrs claus","🤶"]
+      ]},
+      { cat:"Tech & Web", items:[
+        ["💻 laptop computer","💻"],["🖥️ desktop monitor","🖥️"],["🗄️ file cabinet database","🗄️"],["⌨️ keyboard","⌨️"],["🖱️ mouse","🖱️"],
+        ["💾 floppy save","💾"],["💿 disc cd","💿"],["📀 dvd","📀"],["🧮 abacus math","🧮"],["🖥 tv screen","🖥"],
+        ["📱 mobile phone","📱"],["☎️ telephone call","☎️"],["📞 receiver phone","📞"],["📟 pager","📟"],["📠 fax","📠"],
+        ["🔋 battery power","🔋"],["🔌 plug electric","🔌"],["💡 light bulb idea","💡"],["🔦 flashlight","🔦"],["🕯️ candle","🕯️"],
+        ["🛠️ hammer wrench tools","🛠️"],["🔧 wrench fix","🔧"],["🔨 hammer build","🔨"],["⚙️ gear settings","⚙️"],["🧰 toolbox","🧰"],
+        ["🧲 magnet","🧲"],["🔒 lock security","🔒"],["🔓 unlock","🔓"],["🔑 key","🔑"],["🗝️ old key","🗝️"],
+        ["🛡️ shield security","🛡️"],["⚔️ swords battle","⚔️"],["🗡️ dagger","🗡️"],["💣 bomb","💣"],["🚀 rocket launch","🚀"],
+        ["🛰️ satellite","🛰️"],["📡 satellite dish antenna","📡"],["📶 signal bars","📶"],["🔍 search magnify","🔍"],["🔎 search right","🔎"]
+      ]},
+      { cat:"Communication & Media", items:[
+        ["✉️ envelope email mail","✉️"],["📧 email","📧"],["📥 inbox tray download","📥"],["📤 outbox send upload","📤"],
+        ["📨 incoming envelope","📨"],["📩 envelope arrow","📩"],["💬 speech chat comment","💬"],["💭 thought bubble","💭"],
+        ["🗒️ memo notes","🗒️"],["📝 memo pencil write","📝"],["📅 calendar date","📅"],["📆 tear-off calendar","📆"],["🗓️ spiral calendar","🗓️"],
+        ["⏰ alarm clock","⏰"],["⏳ hourglass","⏳"],["📢 loudspeaker announce","📢"],["📣 megaphone cheer","📣"],
+        ["🔔 bell notification","🔔"],["🔕 bell muted","🔕"],["📻 radio broadcast","📻"],["📺 tv","📺"],["🎬 movie clapper","🎬"],
+        ["🎧 headphones music audio","🎧"],["🎤 microphone podcast","🎤"],["🎵 music note","🎵"],["🎶 music notes","🎶"],
+        ["🎸 guitar","🎸"],["🎹 piano keyboard","🎹"],["🥁 drum","🥁"],["🎷 saxophone","🎷"],["🎺 trumpet","🎺"],["🎻 violin","🎻"]
+      ]},
+      { cat:"Books, Files & Office", items:[
+        ["📄 page document file","📄"],["📃 page curl","📃"],["📑 bookmarks tab","📑"],["📊 bar chart stats","📊"],
+        ["📈 chart up trending","📈"],["📉 chart down","📉"],["📋 clipboard","📋"],["📌 pushpin pin","📌"],
+        ["📍 round pin location","📍"],["📎 paperclip attach","📎"],["🖇️ paperclips","🖇️"],["✂️ scissors cut","✂️"],
+        ["🗂️ card index dividers","🗂️"],["🗃️ card file box","🗃️"],["🗃 old file box","🗃"],["📦 package box","📦"],
+        ["📚 books stack read","📚"],["📖 open book read","📖"],["📗 green book","📗"],["📘 blue book guide","📘"],
+        ["📙 orange book","📙"],["📕 red book","📕"],["🔖 bookmark","🔖"],["🏷️ label tag","🏷️"],["💰 money bag","💰"]
+      ]},
+      { cat:"Places & Travel", items:[
+        ["🏠 house home","🏠"],["🏢 office building work","🏢"],["🏬 department store","🏬"],["🏥 hospital","🏥"],
+        ["🏦 bank","🏦"],["🏨 hotel","🏨"],["🏪 convenience store","🏪"],["🏫 school","🏫"],["🗺️ world map","🗺️"],
+        ["🧭 compass navigation","🧭"],["🌍 globe world","🌍"],["🌐 globe meridian web","🌐"],["🏔️ mountain snow","🏔️"],
+        ["🌋 volcano","🌋"],["🏕️ camping tent","🏕️"],["🏖️ beach","🏖️"],["🏜️ desert","🏜️"],["🌅 sunrise","🌅"],
+        ["🌄 sunrise mountains","🌄"],["🌠 shooting star","🌠"],["🌌 milky way space","🌌"],["☀️ sun","☀️"],
+        ["🌙 crescent moon night","🌙"],["⛅ clouds partly","⛅"],["🌧️ rain","🌧️"],["⛈️ thunderstorm","⛈️"],["❄️ snowflake cold","❄️"],
+        ["⚡ lightning zap","⚡"],["🔥 fire hot","🔥"],["💧 droplet water","💧"],["🌊 wave ocean","🌊"]
+      ]},
+      { cat:"Transport", items:[
+        ["🚗 car drive","🚗"],["🚕 taxi","🚕"],["🚙 suv","🚙"],["🚌 bus","🚌"],["🏎️ race car speed","🏎️"],
+        ["🚓 police car","🚓"],["🚑 ambulance","🚑"],["🚒 fire truck","🚒"],["🚚 truck delivery","🚚"],["🚛 semi truck","🚛"],
+        ["🚜 tractor","🚜"],["🛵 scooter motor","🛵"],["🏍️ motorcycle","🏍️"],["🚲 bicycle bike","🚲"],["⛵ sailboat","⛵"],
+        ["🚤 speedboat","🚤"],["⚓ anchor","⚓"],["✈️ airplane travel flight","✈️"],["🛫 departure plane","🛫"],
+        ["🛬 arrival plane","🛬"],["🚀 rocket ship","🚀"],["🛰️ satellite orbit","🛰️"],["🚁 helicopter","🚁"],["🚂 train locomotive","🚂"]
+      ]},
+      { cat:"Food & Drink", items:[
+        ["☕ coffee","☕"],["🍵 tea green","🍵"],["🥤 cup straw drink soda","🥤"],["🍺 beer","🍺"],["🍻 beers cheers","🍻"],
+        ["🍷 wine glass","🍷"],["🥃 whiskey tumbler","🥃"],["🍕 pizza","🍕"],["🍔 hamburger","🍔"],["🍟 fries","🍟"],
+        ["🌭 hotdog","🌭"],["🍿 popcorn","🍿"],["🥓 bacon","🥓"],["🥞 pancakes","🥞"],["🍳 cooking egg","🍳"],
+        ["🍖 meat bone","🍖"],["🍗 chicken poultry","🍗"],["🍚 rice","🍚"],["🍜 ramen noodles","🍜"],["🍣 sushi","🍣"],
+        ["🍦 ice cream soft","🍦"],["🍩 donut","🍩"],["🍪 cookie","🍪"],["🎂 birthday cake","🎂"],["🍫 chocolate bar","🍫"],
+        ["🍬 candy","🍬"],["🍭 lollipop","🍭"],["🍎 red apple","🍎"],["🍊 tangerine orange","🍊"],["🍌 banana","🍌"]
+      ]},
+      { cat:"Objects & Symbols", items:[
+        ["⭐ star favorite","⭐"],["🌟 glowing star","🌟"],["✨ sparkle shine","✨"],["💫 dizzy star","💫"],
+        ["❤️ red heart love","❤️"],["🧡 orange heart","🧡"],["💛 yellow heart","💛"],["💚 green heart","💚"],["💙 blue heart","💙"],
+        ["💜 purple heart","💜"],["🖤 black heart","🖤"],["💔 broken heart","💔"],["❣️ heart exclamation","❣️"],
+        ["💯 hundred score perfect","💯"],["✅ check button yes","✅"],["✔️ check mark","✔️"],["❌ cross no error","❌"],
+        ["⚠️ warning caution","⚠️"],["🚫 prohibited no entry","🚫"],["♻️ recycle reset","♻️"],["🔥 fire lit","🔥"],
+        ["🎁 gift present","🎁"],["🏆 trophy win champion","🏆"],["🥇 gold medal first","🥇"],["🎯 dart bullseye target","🎯"],
+        ["🎲 dice game random","🎲"],["🎮 video game controller","🎮"],["🕹️ joystick arcade","🕹️"],["🎰 slot machine jackpot","🎰"],
+        ["🎨 art palette design","🎨"],["🧩 puzzle piece","🧩"],["🎭 theater masks","🎭"],["🎪 circus tent","🎪"]
+      ]},
+      { cat:"Animals & Nature", items:[
+        ["🐶 dog puppy","🐶"],["🐱 cat kitten","🐱"],["🐭 mouse","🐭"],["🐹 hamster","🐹"],["🐰 rabbit bunny","🐰"],
+        ["🦊 fox","🦊"],["🐻 bear","🐻"],["🐼 panda","🐼"],["🦁 lion","🦁"],["🐯 tiger","🐯"],
+        ["🐨 koala","🐨"],["🐮 cow","🐮"],["🐷 pig","🐷"],["🐸 frog","🐸"],["🐵 monkey","🐵"],
+        ["🦉 owl wisdom","🦉"],["🦇 bat","🦇"],["🐺 wolf black","🐺"],["🐗 boar hog","🐗"],["🐴 horse","🐴"],
+        ["🦄 unicorn","🦄"],["🐝 bee","🐝"],["🐛 bug caterpillar","🐛"],["🦋 butterfly","🦋"],["🐌 snail","🐌"],
+        ["🦅 eagle","🦅"],["🕊️ dove peace","🕊️"],["🐔 chicken","🐔"],["🐧 penguin","🐧"],["🕊 bird flying","🕊"],
+        ["🐟 fish","🐟"],["🐬 dolphin","🐬"],["🐳 whale spouting","🐳"],["🦈 shark","🦈"],["🐊 crocodile","🐊"],
+        ["🐢 turtle","🐢"],["🐍 snake","🐍"],["🦖 t-rex dinosaur","🦖"],["🐙 octopus github","🐙"],["🦑 squid","🦑"]
+      ]}
+    ];
+
+    let tiles = [];
+    let editIndex = -1;
+
+    // Icon picker state
+    let iconList = null;
+    let iconListLoaded = false;
+    let twemojiList = null;
+    let twemojiListLoaded = false;
+    let pickerTab = "emoji"; // "emoji" | "twemoji" | "svg"
+
+    const $ = (id) => document.getElementById(id);
+
+    function toast(msg){
+      const el = $("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toast._t);
+      toast._t = setTimeout(()=>el.classList.remove("show"), 2200);
+    }
+
+    // ✅ PERMANENT SAFE URL NORMALIZER
+    function sanitizeUrl(u){
+      if (!u) return "";
+      u = u.trim();
+
+      if (
+        u.startsWith("/") ||
+        u.startsWith("./") ||
+        u.startsWith("../") ||
+        /\.(html?|php|asp|aspx|jsp)$/i.test(u)
+      ){
+        return u;
+      }
+
+      if (/^(https?:\/\/|file:\/\/\/|chrome:\/\/|edge:\/\/|about:|ftp:\/\/)/i.test(u)){
+        return u;
+      }
+
+      if (/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(u)){
+        return "https://" + u;
+      }
+
+      return u;
+    }
+
+    function domainHint(url){
+      try{ return new URL(url).host; }
+      catch(e){ return (url||"").replace(/^https?:\/\//i,"").slice(0,28); }
+    }
+
+    function save(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ tiles }));
+      $("countLabel").textContent = `${tiles.length} tiles`;
+    }
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw){
+          tiles = DEFAULT_TILES.slice();
+          save();
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        tiles = (parsed && Array.isArray(parsed.tiles)) ? parsed.tiles : DEFAULT_TILES.slice();
+      }catch(e){
+        tiles = DEFAULT_TILES.slice();
+      }
+      $("countLabel").textContent = `${tiles.length} tiles`;
+    }
+
+    // ---- Theme ----
+    function setTheme(t){
+      document.body.setAttribute("data-theme", t);
+      localStorage.setItem(THEME_KEY, t);
+      $("themeSelect").value = t;
+      $("logo").textContent = (t === "neon") ? "💜" : (t === "tactical" ? "🟢" : "🌑");
+    }
+    function loadTheme(){
+      const t = localStorage.getItem(THEME_KEY) || "dark";
+      setTheme(t);
+    }
+
+    // ---- ICON BUILDER ----
+    function makeIcon(t){
+      const d = document.createElement("div");
+      d.className = "ico";
+
+      if (t.iconType === "image" && t.iconVal){
+        const url = String(t.iconVal).trim();
+
+        // Twemoji SVGs are multicolor art: render as a plain <img> so the
+        // theme-gradient mask doesn't flatten them into a silhouette.
+        if (url.includes("/twemoji/")){
+          const img = document.createElement("img");
+          img.src = url;
+          img.style.width = "48px";
+          img.style.height = "48px";
+          img.style.objectFit = "contain";
+          img.style.filter = "drop-shadow(0 8px 16px rgba(0,0,0,.45))";
+          img.onerror = () => { d.innerHTML = `<div class="fallback">❓</div>`; };
+          d.appendChild(img);
+          return d;
+        }
+
+        const m = document.createElement("div");
+        m.className = "svgMask";
+        m.style.webkitMaskImage = `url("${url}")`;
+        m.style.maskImage = `url("${url}")`;
+
+        const probe = new Image();
+        probe.onerror = () => { d.innerHTML = `<div class="fallback">❓</div>`; };
+        probe.src = url;
+
+        d.appendChild(m);
+        return d;
+      }
+
+      if (t.iconType === "letter" && t.iconVal){
+        const s = String(t.iconVal).slice(0,2).toUpperCase();
+        const span = document.createElement("div");
+        span.className = "fallback";
+        span.style.fontSize = "26px";
+        span.style.fontWeight = "950";
+        span.style.letterSpacing = ".6px";
+        span.textContent = s;
+        d.appendChild(span);
+        return d;
+      }
+
+      const emo = document.createElement("div");
+      emo.className = "fallback";
+      emo.textContent = t.iconVal || "🔗";
+      d.appendChild(emo);
+      return d;
+    }
+
+    // ---- Render ----
+    function render(){
+      const grid = $("grid");
+      grid.innerHTML = "";
+
+      tiles.forEach((t, i) => {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.draggable = true;
+        tile.dataset.index = String(i);
+        tile.title = `${t.title}\n${t.url}\n\nDrag to reorder • ✏️ edit • 🗑️ delete`;
+
+        const inner = document.createElement("div");
+        inner.className = "tileInner";
+
+        const mini = document.createElement("div");
+        mini.className = "mini";
+
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.title = "Edit";
+        editBtn.textContent = "✏️";
+        editBtn.addEventListener("click", (e)=>{ e.stopPropagation(); openModal("edit", i); });
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.title = "Delete";
+        delBtn.textContent = "🗑️";
+        delBtn.addEventListener("click", (e)=>{ e.stopPropagation(); removeTile(i); });
+
+        mini.appendChild(editBtn);
+        mini.appendChild(delBtn);
+
+        const icon = makeIcon(t);
+
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = t.title || "Untitled";
+
+        const hint = document.createElement("div");
+        hint.className = "urlHint";
+        hint.textContent = domainHint(sanitizeUrl(t.url || ""));
+
+        inner.appendChild(icon);
+        inner.appendChild(label);
+        inner.appendChild(hint);
+
+        tile.appendChild(mini);
+        tile.appendChild(inner);
+
+        tile.addEventListener("click", ()=> openTile(t.url));
+        tile.addEventListener("contextmenu", (e)=>{
+          e.preventDefault();
+          openTile(t.url, true);
+        });
+
+        tile.addEventListener("dragstart", (e)=>{
+          tile.classList.add("dragging");
+          e.dataTransfer.setData("text/plain", String(i));
+          e.dataTransfer.effectAllowed = "move";
+        });
+
+        tile.addEventListener("dragend", ()=>{
+          tile.classList.remove("dragging");
+          document.querySelectorAll(".tile.dropTarget").forEach(n=>n.classList.remove("dropTarget"));
+        });
+
+        tile.addEventListener("dragover", (e)=>{
+          e.preventDefault();
+          tile.classList.add("dropTarget");
+          e.dataTransfer.dropEffect = "move";
+        });
+
+        tile.addEventListener("dragleave", ()=> tile.classList.remove("dropTarget"));
+
+        tile.addEventListener("drop", (e)=>{
+          e.preventDefault();
+          tile.classList.remove("dropTarget");
+          const from = parseInt(e.dataTransfer.getData("text/plain"), 10);
+          const to = i;
+          if (Number.isFinite(from) && Number.isFinite(to) && from !== to){
+            moveTile(from, to);
+          }
+        });
+
+        grid.appendChild(tile);
+      });
+
+      $("countLabel").textContent = `${tiles.length} tiles`;
+    }
+
+    function openTile(url, newTab=false){
+      url = sanitizeUrl(url);
+      if (!url) return;
+      if (newTab) window.open(url, "_blank", "noopener");
+      else window.location.href = url;
+    }
+
+    // ---- CRUD ----
+    function addTile(tile){
+      tiles.push(tile);
+      save(); render();
+      toast("Tile added");
+    }
+    function updateTile(idx, tile){
+      tiles[idx] = tile;
+      save(); render();
+      toast("Tile updated");
+    }
+    function removeTile(idx){
+      const t = tiles[idx];
+      if (!t) return;
+      if (!confirm(`Delete tile: "${t.title}" ?`)) return;
+      tiles.splice(idx, 1);
+      save(); render();
+      toast("Tile deleted");
+    }
+    function moveTile(from, to){
+      const [item] = tiles.splice(from, 1);
+      tiles.splice(to, 0, item);
+      save(); render();
+    }
+
+    // ---- Modal ----
+    function showModal(show){ $("backdrop").classList.toggle("show", !!show); }
+
+    function syncPickerButtonVisibility(){
+      // Pick button is useful for emoji + image now
+      $("pickIconBtn").style.display = "inline-flex";
+    }
+
+    function openModal(mode, idx=-1){
+      editIndex = (mode === "edit") ? idx : -1;
+      $("modalTitle").textContent = (mode === "edit") ? "Edit Tile" : "Add Tile";
+
+      const t = (mode === "edit" && tiles[idx]) ? tiles[idx] : { title:"", url:"", iconType:"emoji", iconVal:"", notes:"" };
+
+      $("fTitle").value = t.title || "";
+      $("fUrl").value = t.url || "";
+      $("fIconType").value = t.iconType || "emoji";
+      $("fIconVal").value = t.iconVal || "";
+      $("fNotes").value = t.notes || "";
+
+      syncPickerButtonVisibility();
+      showModal(true);
+      setTimeout(()=> $("fTitle").focus(), 50);
+    }
+
+    function closeModal(){ showModal(false); }
+
+    function modalToTile(){
+      const title = $("fTitle").value.trim() || "Untitled";
+      const url = sanitizeUrl($("fUrl").value);
+      const iconType = $("fIconType").value;
+      const iconVal = $("fIconVal").value.trim() || (iconType === "emoji" ? "🔗" : "");
+      const notes = $("fNotes").value.trim();
+      return { title, url, iconType, iconVal, notes };
+    }
+
+    // ---- Import/Export ----
+    function doExport(){
+      const payload = JSON.stringify({ tiles }, null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "launchpad-tiles.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast("Exported JSON");
+    }
+
+    function doImportFile(file){
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const parsed = JSON.parse(reader.result);
+          if (!parsed || !Array.isArray(parsed.tiles)) throw new Error("Bad JSON format");
+          tiles = parsed.tiles;
+          save(); render();
+          toast("Imported tiles");
+        }catch(e){
+          alert("Import failed: " + e.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ---- Search ----
+    function handleSearch(e){
+      e.preventDefault();
+      const q = $("q").value.trim();
+      if (!q) return;
+
+      const looksLikeScheme = /^(https?:\/\/|file:\/\/\/|chrome:\/\/|edge:\/\/|about:|ftp:\/\/)/i.test(q);
+      const looksLikeDomain = /^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(q);
+      const looksLikeLocal  = q.startsWith("/") || q.startsWith("./") || q.startsWith("../") || /\.(html?|php)$/i.test(q);
+
+      if (looksLikeScheme || looksLikeDomain || looksLikeLocal){
+        openTile(q);
+        return;
+      }
+
+      window.location.href = DEFAULT_SEARCH + encodeURIComponent(q);
+    }
+
+    // ---- Icon Picker ----
+    function showIconPicker(show){
+      $("ipBackdrop").classList.toggle("show", !!show);
+      if (show){
+        $("ipSearch").value = "";
+        renderPickerTab();
+        $("ipSearch").focus();
+      }
+    }
+
+    function setPickerTab(tab){
+      pickerTab = tab;
+      $("tabEmoji").classList.toggle("active", tab === "emoji");
+      $("tabTwemoji").classList.toggle("active", tab === "twemoji");
+      $("tabSvg").classList.toggle("active", tab === "svg");
+      renderPickerTab();
+    }
+
+    function renderPickerTab(){
+      const q = ($("ipSearch").value || "").trim().toLowerCase();
+      if (pickerTab === "emoji") renderEmojiGrid(q);
+      else if (pickerTab === "twemoji") {
+        ensureTwemojiLoaded().then(()=> renderTwemojiGrid(q));
+      }
+      else {
+        ensureIconListLoaded().then(()=> renderIconGrid(q));
+      }
+    }
+
+    // ---- Emoji tab ----
+    function renderEmojiGrid(filterText){
+      const wrap = $("ipContent");
+      wrap.innerHTML = "";
+      $("ipNote").innerHTML = `Click any emoji to set it as the tile icon. Filter by name (e.g. <b>rocket</b>, <b>wolf</b>, <b>mail</b>).`;
+
+      let total = 0;
+      let shown = 0;
+
+      EMOJI_LIB.forEach(catData => {
+        const matching = catData.items.filter(([name]) => !filterText || name.toLowerCase().includes(filterText));
+        total += catData.items.length;
+        if (matching.length === 0) return;
+        shown += matching.length;
+
+        const head = document.createElement("div");
+        head.className = "emojiCat";
+        head.textContent = catData.cat;
+        wrap.appendChild(head);
+
+        const grid = document.createElement("div");
+        grid.className = "emojiGrid";
+
+        matching.forEach(([name, emoji]) => {
+          const cell = document.createElement("div");
+          cell.className = "emojiCell";
+          cell.textContent = emoji;
+          cell.title = name;
+          cell.addEventListener("click", ()=>{
+            $("fIconType").value = "emoji";
+            $("fIconVal").value = emoji;
+            toast("Icon set: " + emoji);
+            showIconPicker(false);
+          });
+          grid.appendChild(cell);
+        });
+
+        wrap.appendChild(grid);
+      });
+
+      if (shown === 0){
+        const empty = document.createElement("div");
+        empty.className = "ipEmpty";
+        empty.textContent = `No emoji match "${filterText}". Try the SVG Pack tab.`;
+        wrap.appendChild(empty);
+      }
+    }
+
+    async function ensureTwemojiLoaded(){
+      if (twemojiListLoaded) return;
+      twemojiListLoaded = true;
+
+      try{
+        const res = await fetch(TWEMOJI_MANIFEST, { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+
+        const list = normalizeManifest(data);
+        if (!Array.isArray(list) || list.length === 0) throw new Error("twemoji icons.json has no usable entries");
+
+        twemojiList = list;
+      }catch(err){
+        twemojiList = null;
+      }
+    }
+
+    function renderTwemojiGrid(filterText){
+      const wrap = $("ipContent");
+      wrap.innerHTML = "";
+
+      if (!twemojiList || twemojiList.length === 0){
+        $("ipNote").innerHTML = `Could not load <span class="kbd">${TWEMOJI_MANIFEST}</span>.`;
+        const empty = document.createElement("div");
+        empty.className = "ipEmpty";
+        empty.innerHTML = `
+          <b>Twemoji pack not installed.</b><br><br>
+          Upload the Twemoji SVGs to <span class="kbd">${TWEMOJI_BASE}</span><br>
+          and generate the manifest:<br><br>
+          <span class="kbd">ls -1 *.svg | jq -R . | jq -s . &gt; icons.json</span><br><br>
+          Until then, use the <b>Emojis</b> or <b>SVG Pack</b> tabs.`;
+        wrap.appendChild(empty);
+        return;
+      }
+
+      $("ipNote").innerHTML = `Loaded <b>${twemojiList.length}</b> full-color emoji from <span class="kbd">${TWEMOJI_MANIFEST}</span>. These render identically on every OS, including Windows 7.`;
+
+      const q = (filterText || "").trim().toLowerCase();
+      const list = q ? twemojiList.filter(n => n.toLowerCase().includes(q)) : twemojiList.slice();
+
+      if (list.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "ipEmpty";
+        empty.style.gridColumn = "1 / -1";
+        empty.textContent = `No matches for "${q}". (Twemoji files are named by codepoint, e.g. 1f600.svg — try the Emojis tab to search by name.)`;
+        wrap.appendChild(empty);
+        return;
+      }
+
+      const grid = document.createElement("div");
+      grid.className = "ipGrid";
+
+      list.forEach(name => {
+        const btn = document.createElement("div");
+        btn.className = "ipIcon";
+        btn.title = name;
+
+        const img = document.createElement("img");
+        img.src = TWEMOJI_BASE + name;
+        img.alt = name;
+
+        const label = document.createElement("span");
+        label.textContent = name.replace(/\.svg$/i,"");
+
+        btn.appendChild(img);
+        btn.appendChild(label);
+
+        btn.addEventListener("click", ()=>{
+          $("fIconType").value = "image";
+          $("fIconVal").value = TWEMOJI_BASE + name;
+          toast("Twemoji icon set");
+          showIconPicker(false);
+        });
+
+        grid.appendChild(btn);
+      });
+
+      wrap.appendChild(grid);
+    }
+
+    // ---- SVG tab ----
+    function normalizeManifest(data){
+      if (Array.isArray(data)){
+        if (data.length === 0) return [];
+        if (typeof data[0] === "string") return data.map(s => String(s).trim()).filter(Boolean);
+        if (typeof data[0] === "object" && data[0]){
+          const out = [];
+          for (const o of data){
+            const v = o.file || o.name || o.path || o.icon || o.src || o.url;
+            if (v) out.push(String(v).trim());
+          }
+          return out.filter(Boolean);
+        }
+      }
+      return [];
+    }
+
+    async function ensureIconListLoaded(){
+      if (iconListLoaded) return;
+      iconListLoaded = true;
+
+      try{
+        const res = await fetch(ICON_MANIFEST, { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+
+        const list = normalizeManifest(data);
+        if (!Array.isArray(list) || list.length === 0) throw new Error("icons.json has no usable entries");
+
+        iconList = list;
+      }catch(err){
+        iconList = null;
+      }
+    }
+
+    function renderIconGrid(filterText){
+      const wrap = $("ipContent");
+      wrap.innerHTML = "";
+
+      if (!iconList || iconList.length === 0){
+        $("ipNote").innerHTML = `Could not load <span class="kbd">${ICON_MANIFEST}</span>. Check path / permissions / JSON format.`;
+        const empty = document.createElement("div");
+        empty.className = "ipEmpty";
+        empty.innerHTML = `
+          <b>No icons available.</b><br><br>
+          Put SVG files in <span class="kbd">${ICON_BASE}</span><br>
+          and generate <span class="kbd">${ICON_MANIFEST}</span>.<br><br>
+          Or use the <b>Emojis</b> tab instead.`;
+        wrap.appendChild(empty);
+        return;
+      }
+
+      $("ipNote").innerHTML = `Loaded <b>${iconList.length}</b> icons from <span class="kbd">${ICON_MANIFEST}</span>. Click one to set Icon Value.`;
+
+      const q = (filterText || "").trim().toLowerCase();
+      const list = q ? iconList.filter(n => n.toLowerCase().includes(q)) : iconList.slice();
+
+      if (list.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "ipEmpty";
+        empty.style.gridColumn = "1 / -1";
+        empty.textContent = `No matches for "${q}".`;
+        wrap.appendChild(empty);
+        return;
+      }
+
+      const grid = document.createElement("div");
+      grid.className = "ipGrid";
+
+      list.forEach(name => {
+        const btn = document.createElement("div");
+        btn.className = "ipIcon";
+        btn.title = name;
+
+        const img = document.createElement("img");
+        img.src = ICON_BASE + name;
+        img.alt = name;
+
+        const label = document.createElement("span");
+        label.textContent = name.replace(/\.svg$/i,"");
+
+        btn.appendChild(img);
+        btn.appendChild(label);
+
+        btn.addEventListener("click", ()=>{
+          $("fIconType").value = "image";
+          $("fIconVal").value = ICON_BASE + name;
+          toast("Icon set: " + name);
+          showIconPicker(false);
+        });
+
+        grid.appendChild(btn);
+      });
+
+      wrap.appendChild(grid);
+    }
+
+    // ---- Init ----
+    document.addEventListener("DOMContentLoaded", () => {
+      loadTheme();
+      load();
+      render();
+
+      $("searchForm").addEventListener("submit", handleSearch);
+      $("themeSelect").addEventListener("change", (e)=> setTheme(e.target.value));
+
+      $("addBtn").addEventListener("click", ()=> openModal("add"));
+      $("closeModal").addEventListener("click", closeModal);
+      $("cancelBtn").addEventListener("click", closeModal);
+
+      $("pickIconBtn").addEventListener("click", ()=>{
+        showIconPicker(true);
+      });
+
+      $("tabEmoji").addEventListener("click", ()=> setPickerTab("emoji"));
+      $("tabTwemoji").addEventListener("click", ()=> setPickerTab("twemoji"));
+      $("tabSvg").addEventListener("click", ()=> setPickerTab("svg"));
+
+      $("ipCloseBtn").addEventListener("click", ()=> showIconPicker(false));
+      $("ipBackdrop").addEventListener("click", (e)=>{ if (e.target === $("ipBackdrop")) showIconPicker(false); });
+      $("ipSearch").addEventListener("input", ()=> renderPickerTab());
+
+      $("saveBtn").addEventListener("click", ()=>{
+        const tile = modalToTile();
+        if (!tile.url){
+          alert("URL is required.");
+          return;
+        }
+        if (editIndex >= 0) updateTile(editIndex, tile);
+        else addTile(tile);
+        closeModal();
+      });
+
+      $("exportBtn").addEventListener("click", doExport);
+
+      $("importBtn").addEventListener("click", ()=> $("filePicker").click());
+      $("filePicker").addEventListener("change", (e)=>{
+        const file = e.target.files && e.target.files[0];
+        if (file) doImportFile(file);
+        e.target.value = "";
+      });
+
+      $("resetBtn").addEventListener("click", ()=>{
+        if (!confirm("Reset tiles to defaults? (This overwrites your saved layout)")) return;
+        tiles = DEFAULT_TILES.slice();
+        save(); render();
+        toast("Reset done");
+      });
+
+      $("backdrop").addEventListener("click", (e)=>{ if (e.target === $("backdrop")) closeModal(); });
+
+      document.addEventListener("keydown", (e)=>{
+        if (e.key === "Escape"){
+          if ($("ipBackdrop").classList.contains("show")) showIconPicker(false);
+          else closeModal();
+        }
+      });
+
+      syncPickerButtonVisibility();
+    });
+  </script>
+</body>
+</html>
